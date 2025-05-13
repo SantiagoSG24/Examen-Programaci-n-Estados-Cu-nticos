@@ -2,7 +2,6 @@ from typing import List, Dict, Union
 import math
 import numpy as np
 import json
-import json
 
 class EstadoCuantico:
     def __init__(self, id: str, vector: List[Union[complex, float]], base: str):

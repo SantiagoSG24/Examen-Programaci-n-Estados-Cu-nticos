@@ -6,6 +6,7 @@ import numpy as np
 import json
 from test_repositorio import RepositorioDeEstados
 from test_operador_cuantico import OperadorCuantico
+import tempfile
 
 
 class TestRepositorioDeEstados(unittest.TestCase):
