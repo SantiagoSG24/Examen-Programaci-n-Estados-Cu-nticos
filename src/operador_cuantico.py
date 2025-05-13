@@ -1,42 +1,74 @@
-from repositorio import RepositorioDeEstados
-from estado_cuantico import EstadoCuantico
 from typing import List
-from typing import Dict, Union
-import numpy as np
+import math
+from estado_cuantico import EstadoCuantico
+
 class OperadorCuantico:
-    def __init__(self, nombre, matriz):
+    def __init__(self, nombre: str, matriz: List[List[complex]]):
         """
-        Clase que representa un operador cuántico (matriz unitaria).
-        :param nombre: Nombre o etiqueta del operador (por ejemplo, "X", "H").
-        :param matriz: Matriz que implementa la transformación lineal (lista de listas).
+        Inicializa un operador cuántico con un nombre y su matriz de transformación.
+        
+        Args:
+            nombre: Nombre identificativo del operador (ej. "X", "H")
+            matriz: Matriz de transformación (lista de listas de números complejos)
         """
         self.nombre = nombre
-        self.matriz = np.array(matriz, dtype=complex)
-
-    def aplicar(self, estado):
+        self.matriz = matriz
+        
+        # Verificar que la matriz sea cuadrada
+        n = len(matriz)
+        for fila in matriz:
+            if len(fila) != n:
+                raise ValueError("La matriz del operador debe ser cuadrada")
+    
+    def aplicar(self, estado: EstadoCuantico) -> EstadoCuantico:
         """
-        Aplica el operador cuántico a un estado cuántico.
-        :param estado: Instancia de EstadoCuantico.
-        :return: Nuevo EstadoCuantico con el estado transformado.
+        Aplica el operador a un estado cuántico, devolviendo un nuevo estado.
+        
+        Args:
+            estado: Estado cuántico a transformar
+            
+        Returns:
+            Nuevo estado cuántico resultante de la aplicación del operador
         """
-        nuevo_vector = np.dot(self.matriz, estado.vector)
+        # Verificar que las dimensiones coincidan
+        if len(estado.vector) != len(self.matriz):
+            raise ValueError(f"Dimensiones incompatibles: operador {len(self.matriz)}x{len(self.matriz)}, estado {len(estado.vector)}")
+            
+        # Multiplicación matriz-vector
+        nuevo_vector = []
+        for fila in self.matriz:
+            componente = sum(f * v for f, v in zip(fila, estado.vector))
+            nuevo_vector.append(componente)
+            
+        # Crear nuevo estado con el mismo ID + sufijo del operador
         nuevo_id = f"{estado.id}_{self.nombre}"
         return EstadoCuantico(nuevo_id, nuevo_vector, estado.base)
+    
+    def __str__(self) -> str:
+        return f"Operador {self.nombre} (matriz {len(self.matriz)}x{len(self.matriz)})"
+    
+    def __repr__(self) -> str:
+        return f"OperadorCuantico(nombre={self.nombre!r}, matriz={self.matriz!r})"
 
+# Operadores predefinidos
+def crear_operador_x() -> OperadorCuantico:
+    """Crea la puerta X (NOT cuántico)"""
+    return OperadorCuantico("X", [
+        [0, 1],
+        [1, 0]
+    ])
 
-# Pruebas
-if __name__ == "__main__":
-    # Estado inicial |0>
-    estado = EstadoCuantico("q0", [1, 0], "computacional")
+def crear_operador_h() -> OperadorCuantico:
+    """Crea la puerta Hadamard"""
+    h = 1/math.sqrt(2)
+    return OperadorCuantico("H", [
+        [h, h],
+        [h, -h]
+    ])
 
-    # Operador X (NOT cuántico)
-    opX = OperadorCuantico("X", [[0, 1], [1, 0]])
-    nuevo_estado_X = opX.aplicar(estado)
-    print(nuevo_estado_X)  # Debería representar |1> = [0, 1]
-    print(nuevo_estado_X.vector)  # Esperado: [0, 1]
-
-    # Operador H (Hadamard)
-    opH = OperadorCuantico("H", [[1/np.sqrt(2), 1/np.sqrt(2)], [1/np.sqrt(2), -1/np.sqrt(2)]])
-    nuevo_estado_H = opH.aplicar(estado)
-    print(nuevo_estado_H)  # Debería representar un estado aproximadamente [0.707, 0.707]
-    print(nuevo_estado_H.vector)  # Esperado: [0.707, 0.707]
+def crear_operador_z() -> OperadorCuantico:
+    """Crea la puerta Z"""
+    return OperadorCuantico("Z", [
+        [1, 0],
+        [0, -1]
+    ])
