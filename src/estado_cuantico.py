@@ -1,3 +1,5 @@
+from repositorio import Repositorio
+from operador_cuantico import OperadorCuantico
 from typing import List, Union
 import math
 

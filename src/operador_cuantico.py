@@ -1,3 +1,4 @@
+from repositorio import RepositorioDeEstados
 from estado_cuantico import EstadoCuantico
 from typing import List
 from typing import Dict, Union

@@ -1,14 +1,5 @@
 from estado_cuantico import EstadoCuantico
 from typing import List, Dict, Union
-class EstadoCuantico:
-    def __init__(self, id, vector, base):
-        self.id = id
-        self.vector = vector
-        self.base = base
-
-    def __str__(self):
-        return f"ID: {self.id}, Vector: {self.vector}, Base: {self.base}"
-
 
 class RepositorioDeEstados:
     def __init__(self):
